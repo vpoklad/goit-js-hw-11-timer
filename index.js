@@ -1,61 +1,69 @@
-function pad(value){
-        return String(value).padStart(2, "0");
-};
-const CountdownTimer = {
-    targetDate: new Date('Aug 21, 2021'),
-    time: null,
-    
-    getTime() {
-        let currentDate = Date.now();
-        time = this.targetDate.getTime() - currentDate;
-        const days = Math.floor(time / (1000 * 60 * 60 * 24));
-        const hours =pad(Math.floor((time % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)));
-        const mins = pad(Math.floor((time % (1000 * 60 * 60)) / (1000 * 60)));
-        const secs = pad(Math.floor((time % (1000 * 60)) / 1000));
-        console.log(days, hours, mins, secs);
+
+class CountdownTimer{
+    constructor({ selector, targetDate }) {
+        this.selector = document.querySelector(selector);;
+        this.targetDate = targetDate;
+        this.refs = {
+            days: this.selector.querySelector('[data-value="days"]'),
+            hours: this.selector.querySelector('[data-value="hours"]'),
+            minutes: this.selector.querySelector('[data-value="mins"]'),
+            seconds: this.selector.querySelector('[data-value="secs"]'),
+        }
+        this.start();
+        }
         
-    },
-    start() {
-    setInterval(this.getTime.bind(CountdownTimer), 1000)
+     
+    
+    start() { this.timeIntervalId = setInterval(() => {
+            const timeToGo = this.targetDate - Date.now();
+            if (timeToGo <= 0) {
+                clearInterval(this.timeIntervalId);
+                alert('Target date has passed!')
+                return;
+            }
+
+            const timeRemaining = this.getTime(timeToGo);
+            this.renderClock(timeRemaining);
+        }, 1000)
+       
+       
+     
+    }  
+    
+            
+    getTime(time) {        
+       
+        const days = Math.floor(time / (1000 * 60 * 60 * 24));
+        const hours =this.pad(Math.floor((time % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)));
+        const minutes = this.pad(Math.floor((time % (1000 * 60 * 60)) / (1000 * 60)));
+        const seconds = this.pad(Math.floor((time % (1000 * 60)) / 1000));
+        return { days, hours, minutes, seconds };
+        
+    }
+   
+
+
+    renderClock({ days, hours, minutes, seconds }) {
+        this.refs.days.textContent = days;
+        this.refs.hours.textContent = hours;
+        this.refs.minutes.textContent = minutes;
+        this.refs.seconds.textContent = seconds;
     }
 
+    pad(value) {
+                return String(value).padStart(2, "0");
+    }
 
 }
-CountdownTimer.start();
+
+
+
+new CountdownTimer({
+  selector: '#timer-1',
+  targetDate: new Date('Aug 11, 2021'),
+});
 
 
 
 
-// const days = Math.floor(time / (1000 * 60 * 60 * 24));
-
-/*
- * Оставшиеся часы: получаем остаток от предыдущего расчета с помощью оператора
- * остатка % и делим его на количество миллисекунд в одном часе
- * (1000 * 60 * 60 = миллисекунды * минуты * секунды)
- */
-// const hours = Math.floor((time % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-
-/*
- * Оставшиеся минуты: получаем оставшиеся минуты и делим их на количество
- * миллисекунд в одной минуте (1000 * 60 = миллисекунды * секунды)
- */
-// const mins = Math.floor((time % (1000 * 60 * 60)) / (1000 * 60));
-
-/*
- * Оставшиеся секунды: получаем оставшиеся секунды и делим их на количество
- * миллисекунд в одной секунде (1000)
- */
-// const secs = Math.floor((time % (1000 * 60)) / 1000);
-
-/*
- * Оставшиеся дни: делим значение UTC на 1000 * 60 * 60 * 24, количество
- * миллисекунд в одном дне (миллисекунды * секунды * минуты * часы)
- */
-
-
-
-// new CountdownTimer({
-//   selector: '#timer-1',
-//   targetDate: new Date('Jul 17, 2019'),
-// });
 
